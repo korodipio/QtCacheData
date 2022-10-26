@@ -29,6 +29,7 @@ public:
 protected:
     void initFilePath();
     void initAesKey();
+    QByteArray randomContent() const;
 
 protected:
     std::string _seed;

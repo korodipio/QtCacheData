@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    CacheData cache("seed");
+    CacheData cache("213asdasqweqw12123123");
     qDebug() << cache.filePathFromSeed().c_str();
 
     QByteArray fileContent;

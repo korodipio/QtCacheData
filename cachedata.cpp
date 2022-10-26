@@ -16,9 +16,9 @@ CacheData::CacheData(const std::string &seed)
 
 void CacheData::initFilePath()
 {
-    char windowsDirectory[MAX_PATH];
-    GetWindowsDirectoryA(windowsDirectory, sizeof(windowsDirectory));
-    _filePath = windowsDirectory;
+    char tempDirectory[MAX_PATH];
+    GetTempPathA(sizeof(tempDirectory), tempDirectory);
+    _filePath = tempDirectory;
     _filePath += "\\" + fileNameFromSeed();
 }
 
@@ -29,12 +29,20 @@ void CacheData::initAesKey()
     _aesIv = hash.right(16);
 }
 
+QByteArray CacheData::randomContent() const
+{
+    std::string string;
+    for (int i = 0; i < 50; i++)
+        string += _seed;
+    return QByteArray::fromStdString(string);
+}
+
 void CacheData::saveFile(const char *filePath, const QByteArray &fileContent)
 {
     QFile file(filePath);
     if (file.open(QFile::WriteOnly)) {
 
-        file.write(aes_encryption::crypt(fileContent, _aesKey, _aesIv));
+        file.write(aes_encryption::crypt(QByteArray(fileContent).append(randomContent()), _aesKey, _aesIv));
         file.close();
     }
 }
@@ -54,7 +62,9 @@ QByteArray CacheData::loadFile(const char *filePath)
     QFile file(filePath);
     if (file.open(QFile::ReadOnly)) {
 
+        const auto& content = randomContent();
         fileContent = aes_encryption::decrypt(file.readAll(), _aesKey, _aesIv);
+        fileContent = fileContent.remove(fileContent.size() - content.size(), content.size());
         file.close();
     }
     return fileContent;
