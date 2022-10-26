@@ -2,9 +2,7 @@
 #include "aesencryption.h"
 
 #include <QFile>
-#include <QFileDevice>
 #include <QCryptographicHash>
-#include <QDebug>
 
 #include <Windows.h>
 
